@@ -1544,7 +1544,7 @@
     />
 
     <localInspection implementationClass="org.jetbrains.kotlin.idea.inspections.LeakingThisInspection"
-                     displayName="Leaking this in constructor"
+                     displayName="Leaking 'this' in constructor"
                      groupName="Kotlin"
                      enabledByDefault="true"
                      level="WARNING"

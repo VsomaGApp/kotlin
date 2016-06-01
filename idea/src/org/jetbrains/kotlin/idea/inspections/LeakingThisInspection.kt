@@ -43,7 +43,7 @@ class LeakingThisInspection : AbstractKotlinInspection() {
                     is PropertyIsNull -> null // Not supported yet
                     is NonFinalClass ->
                         if (expression is KtThisExpression)
-                            "Leaking this in constructor of non-final class ${leakingThisDescriptor.klass.name}"
+                            "Leaking 'this' in constructor of non-final class ${leakingThisDescriptor.klass.name}"
                         else
                             null // Not supported yet
                     is NonFinalProperty ->
