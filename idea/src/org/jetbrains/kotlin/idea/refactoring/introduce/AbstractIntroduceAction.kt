@@ -25,6 +25,8 @@ abstract class AbstractIntroduceAction : BasePlatformRefactoringAction() {
         setInjectedContext(true)
     }
 
+    final override fun setInjectedContext(worksInInjected: Boolean) = super.setInjectedContext(worksInInjected)
+
     override fun isAvailableInEditorOnly(): Boolean = true
 
     override fun isEnabledOnElements(elements: Array<out PsiElement>): Boolean =
