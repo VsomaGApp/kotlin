@@ -40,34 +40,32 @@ class LeakingThisInspection : AbstractKotlinInspection() {
                 val context = expression.analyzeFully()
                 val leakingThisDescriptor = context.get(LEAKING_THIS, expression) ?: return
                 val description = when (leakingThisDescriptor) {
-                    is PropertyIsNull -> null // Not supported yet
+                    is PropertyIsNull -> return // Not supported yet
                     is NonFinalClass ->
                         if (expression is KtThisExpression)
                             "Leaking 'this' in constructor of non-final class ${leakingThisDescriptor.klass.name}"
                         else
-                            null // Not supported yet
+                            return // Not supported yet
                     is NonFinalProperty ->
                         "Accessing non-final property ${leakingThisDescriptor.property.name} in constructor"
                     is NonFinalFunction ->
                         "Calling non-final function ${leakingThisDescriptor.function.name} in constructor"
                 }
-                if (description != null) {
-                    val memberDescriptorToFix = when (leakingThisDescriptor) {
-                        is NonFinalProperty -> leakingThisDescriptor.property
-                        is NonFinalFunction -> leakingThisDescriptor.function
-                        else -> null
-                    }
-                    val memberFix = memberDescriptorToFix?.let { MakeFinalFix(it) }
-                    val classFix = MakeFinalFix(leakingThisDescriptor.classOrObject)
-                    holder.registerProblem(
-                            expression, description,
-                            when (leakingThisDescriptor) {
-                                is NonFinalProperty, is NonFinalFunction -> GENERIC_ERROR_OR_WARNING
-                                else -> WEAK_WARNING
-                            },
-                            *(if (memberFix?.isApplicable() ?: false) arrayOf(memberFix, classFix) else arrayOf(classFix))
-                    )
+                val memberDescriptorToFix = when (leakingThisDescriptor) {
+                    is NonFinalProperty -> leakingThisDescriptor.property
+                    is NonFinalFunction -> leakingThisDescriptor.function
+                    else -> null
                 }
+                val memberFix = memberDescriptorToFix?.let { MakeFinalFix(it) }
+                val classFix = MakeFinalFix(leakingThisDescriptor.classOrObject)
+                holder.registerProblem(
+                        expression, description,
+                        when (leakingThisDescriptor) {
+                            is NonFinalProperty, is NonFinalFunction -> GENERIC_ERROR_OR_WARNING
+                            else -> WEAK_WARNING
+                        },
+                        *(if (memberFix?.isApplicable() ?: false) arrayOf(memberFix, classFix) else arrayOf(classFix))
+                )
             }
         }
     }
